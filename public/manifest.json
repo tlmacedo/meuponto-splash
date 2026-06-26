@@ -389,7 +389,7 @@
       "videoUrl": "https://meuponto-splash.tl-macedo.workers.dev/videos/Coruja_fêmea_recebendo_o_c.mp4",
       "sha256": "f838b087da14872776ab664dd3b03835a927387df910cd24841fd003b2679629",
       "sizeBytes": 2655160,
-      "durationMs": 10005,
+      "durationMs": 10000,
       "maxViews": null,
       "cooldownHours": null
     },
@@ -406,7 +406,24 @@
       "videoUrl": "https://meuponto-splash.tl-macedo.workers.dev/videos/Gorila_macho_na_cena_do_“t.mp4",
       "sha256": "7ea69ceb30c40bc09f2fc3a5110910330a1c4c7dd5deda8e34eef4e77b284e1e",
       "sizeBytes": 2619173,
-      "durationMs": 10005,
+      "durationMs": 10000,
+      "maxViews": null,
+      "cooldownHours": null
+    },
+    {
+      "id": "lobo_macho_desviando_de_bal",
+      "version": 1,
+      "type": "NORMAL",
+      "active": true,
+      "priority": 50,
+      "minAppVersionCode": 22,
+      "maxAppVersionCode": null,
+      "startsAt": null,
+      "endsAt": null,
+      "videoUrl": "https://meuponto-splash.tl-macedo.workers.dev/videos/Lobo_macho_desviando_de_bal.mp4",
+      "sha256": "68c1192ef1567dacbcaee7a20f1de961375906633e3cdfdefac3e01bdaf66d4a",
+      "sizeBytes": 3002582,
+      "durationMs": 10000,
       "maxViews": null,
       "cooldownHours": null
     }
