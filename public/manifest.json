@@ -37,7 +37,7 @@
       "cooldownHours": null
     },
     {
-      "id": "Canguru_fêmea_levantando_t",
+      "id": "canguru_femea_levantando_t",
       "version": 1,
       "type": "NORMAL",
       "active": true,
@@ -71,7 +71,7 @@
       "cooldownHours": null
     },
     {
-      "id": "Urso_macho_subindo_escadari",
+      "id": "urso_macho_subindo_escadari",
       "version": 1,
       "type": "NORMAL",
       "active": true,
@@ -156,7 +156,7 @@
       "cooldownHours": null
     },
     {
-      "id": "Hipopótamo_macho_na_cena_do_tr",
+      "id": "hipopotamo_macho_na_cena_do_tr",
       "version": 1,
       "type": "NORMAL",
       "active": true,
