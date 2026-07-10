@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-06-24T22:00:00Z",
+  "updatedAt": "2026-07-10T18:09:33Z",
   "items": [
     {
       "id": "cachorro_mona_lisa",
@@ -425,6 +425,23 @@
       "sizeBytes": 3002582,
       "durationMs": 10000,
       "maxViews": null,
+      "cooldownHours": null
+    },
+    {
+      "id": "jogo_brasil_noruega",
+      "version": 2,
+      "type": "MANDATORY",
+      "active": true,
+      "priority": 50,
+      "minAppVersionCode": 22,
+      "maxAppVersionCode": null,
+      "startsAt": null,
+      "endsAt": null,
+      "videoUrl": "https://meuponto-splash.tl-macedo.workers.dev/videos/jogo_brasil_noruega.mp4",
+      "sha256": "c7c897576be0a21c3f57ce2e8716fba2415104a3c5afe51350e63272fd70acd3",
+      "sizeBytes": 2766619,
+      "durationMs": 10005,
+      "maxViews": 3,
       "cooldownHours": null
     }
   ]
