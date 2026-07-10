@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-07-10T18:09:33Z",
+  "updatedAt": "2026-07-10T21:23:09Z",
   "items": [
     {
       "id": "cachorro_mona_lisa",
@@ -436,12 +436,29 @@
       "minAppVersionCode": 22,
       "maxAppVersionCode": null,
       "startsAt": "2026-07-10T04:00:00Z",
-      "endsAt": "2026-07-13T03:59:59Z",
+      "endsAt": "2026-07-15T03:59:59Z",
       "videoUrl": "https://meuponto-splash.tl-macedo.workers.dev/videos/jogo_brasil_noruega.mp4",
       "sha256": "c7c897576be0a21c3f57ce2e8716fba2415104a3c5afe51350e63272fd70acd3",
       "sizeBytes": 2766619,
       "durationMs": 10000,
-      "maxViews": 4,
+      "maxViews": 3,
+      "cooldownHours": null
+    },
+    {
+      "id": "churrasco_brasil_argentina",
+      "version": 1,
+      "type": "MANDATORY",
+      "active": true,
+      "priority": 80,
+      "minAppVersionCode": 22,
+      "maxAppVersionCode": null,
+      "startsAt": "2026-07-10T04:00:00Z",
+      "endsAt": "2026-07-15T03:59:59Z",
+      "videoUrl": "https://meuponto-splash.tl-macedo.workers.dev/videos/churrasco_brasil_argentina.mp4",
+      "sha256": "d810e4df1f3a7938933f95cfef24b38a6f0aeb708cb8713baec98b50794b5cdb",
+      "sizeBytes": 2676843,
+      "durationMs": 10000,
+      "maxViews": 3,
       "cooldownHours": null
     }
   ]
