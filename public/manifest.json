@@ -432,16 +432,16 @@
       "version": 2,
       "type": "MANDATORY",
       "active": true,
-      "priority": 50,
+      "priority": 80,
       "minAppVersionCode": 22,
       "maxAppVersionCode": null,
-      "startsAt": "2024-07-26T10:30:00Z",
-      "endsAt": "2024-07-28T18:30:00Z",
+      "startsAt": "2026-07-26T10:30:00Z",
+      "endsAt": "2026-07-28T18:30:00Z",
       "videoUrl": "https://meuponto-splash.tl-macedo.workers.dev/videos/jogo_brasil_noruega.mp4",
       "sha256": "c7c897576be0a21c3f57ce2e8716fba2415104a3c5afe51350e63272fd70acd3",
       "sizeBytes": 2766619,
       "durationMs": 10000,
-      "maxViews": 3,
+      "maxViews": 4,
       "cooldownHours": null
     }
   ]
