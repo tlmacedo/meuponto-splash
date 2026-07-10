@@ -94,6 +94,10 @@ print(int(round(duration * 1000)))
 PY
 )"
 
+  if [ "$DURATION_MS" -gt 10000 ]; then
+    DURATION_MS=10000
+  fi
+
   echo "Arquivo: $VIDEO_FILE"
   echo "Tipo: $VIDEO_TYPE_UPPER"
   echo "SHA256: $SHA256"
