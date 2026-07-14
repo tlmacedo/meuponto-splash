@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-07-10T21:23:09Z",
+  "updatedAt": "2026-07-14T21:39:11Z",
   "items": [
     {
       "id": "cachorro_mona_lisa",
@@ -430,35 +430,52 @@
     {
       "id": "jogo_brasil_noruega",
       "version": 2,
-      "type": "MANDATORY",
+      "type": "NORMAL",
       "active": true,
-      "priority": 80,
+      "priority": 70,
       "minAppVersionCode": 22,
       "maxAppVersionCode": null,
       "startsAt": "2026-07-10T04:00:00Z",
-      "endsAt": "2026-07-15T03:59:59Z",
+      "endsAt": "2026-07-31T03:59:59Z",
       "videoUrl": "https://meuponto-splash.tl-macedo.workers.dev/videos/jogo_brasil_noruega.mp4",
       "sha256": "c7c897576be0a21c3f57ce2e8716fba2415104a3c5afe51350e63272fd70acd3",
       "sizeBytes": 2766619,
       "durationMs": 10000,
-      "maxViews": 3,
+      "maxViews": null,
       "cooldownHours": null
     },
     {
       "id": "churrasco_brasil_argentina",
       "version": 1,
-      "type": "MANDATORY",
+      "type": "NORMAL",
       "active": true,
-      "priority": 80,
+      "priority": 65,
       "minAppVersionCode": 22,
       "maxAppVersionCode": null,
       "startsAt": "2026-07-10T04:00:00Z",
-      "endsAt": "2026-07-15T03:59:59Z",
+      "endsAt": "2026-07-31T03:59:59Z",
       "videoUrl": "https://meuponto-splash.tl-macedo.workers.dev/videos/churrasco_brasil_argentina.mp4",
       "sha256": "d810e4df1f3a7938933f95cfef24b38a6f0aeb708cb8713baec98b50794b5cdb",
       "sizeBytes": 2676843,
       "durationMs": 10000,
-      "maxViews": 3,
+      "maxViews": null,
+      "cooldownHours": null
+    },
+    {
+      "id": "derrota_da_franca",
+      "version": 1,
+      "type": "MANDATORY",
+      "active": true,
+      "priority": 85,
+      "minAppVersionCode": 22,
+      "maxAppVersionCode": null,
+      "startsAt": "2026-07-10T04:00:00Z",
+      "endsAt": "2026-07-31T03:59:59Z",
+      "videoUrl": "https://meuponto-splash.tl-macedo.workers.dev/videos/derrota_da_franca.mp4",
+      "sha256": "3feabfc42311bdd57821be26b01d30d69dd8febd23ec2048528c834ff4d2c44d",
+      "sizeBytes": 2459230,
+      "durationMs": 10000,
+      "maxViews": 5,
       "cooldownHours": null
     }
   ]
