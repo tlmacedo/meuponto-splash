@@ -13,7 +13,7 @@ python3 - "$ARQUIVO" <<'PY'
 # Regras espelhadas do parser: app/src/main/java/br/com/tlmacedo/meuponto/data/notificacao/CatalogoMensagensParser.kt
 # (repositório do app). O app é a autoridade: se este script divergir do parser, o parser vale.
 # Diferença intencional: o app apenas descarta item inválido; aqui item inválido é ERRO (trava o commit).
-import json, re, sys
+import decimal, json, re, sys
 from datetime import datetime
 
 TIPOS = {"ENTRADA_ANTES","ENTRADA_NO_HORARIO","ENTRADA_DEPOIS","SAIDA_INTERVALO_ANTES",
@@ -35,7 +35,7 @@ INT_MIN, INT_MAX = -2**31, 2**31 - 1   # Int do Kotlin (intValueExact)
 
 RE_ID = re.compile(r"[A-Za-z0-9_.-]{1,80}")
 RE_VAR = re.compile(r"\{([^{}]*)\}")
-RE_INSTANTE = re.compile(r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\.\d{1,9})?Z")
+RE_INSTANTE = re.compile(r"([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})(\.[0-9]{1,9})?Z")  # só dígitos ASCII
 
 def rejeitar(msg):
     print(f"ERRO: {msg}"); sys.exit(1)
@@ -44,12 +44,21 @@ def rejeitar_constante(c):
     raise ValueError(f"constante não permitida: {c}")
 
 def inteiro(v):
-    """Como JsonObject.inteiro: número sem parte fracionária e dentro do Int; bool/string não contam."""
+    """Como JsonObject.inteiro (intValueExact): int, ou número decimal exatamente integral, dentro do Int; bool/string não contam."""
     if isinstance(v, bool): return None
     if isinstance(v, int): n = v
-    elif isinstance(v, float) and v == v and v not in (float("inf"), float("-inf")) and v.is_integer(): n = int(v)
+    elif isinstance(v, decimal.Decimal):
+        if not v.is_finite() or abs(v) > INT_MAX + 1 or v != v.to_integral_value(): return None
+        n = int(v)
     else: return None
     return n if INT_MIN <= n <= INT_MAX else None
+
+def kt_trim(t):
+    """Como String.trim() do Kotlin: remove só Char.isWhitespace() (isspace do Python, exceto U+0085)."""
+    ini, fim = 0, len(t)
+    while ini < fim and t[ini].isspace() and t[ini] != "\x85": ini += 1
+    while fim > ini and t[fim - 1].isspace() and t[fim - 1] != "\x85": fim -= 1
+    return t[ini:fim]
 
 def instante_ok(v):
     """Como Instant.parse: ISO-8601 estrito com 'Z' final; segundos obrigatórios."""
@@ -58,15 +67,15 @@ def instante_ok(v):
     if not m: return False
     try:
         a, mes, d, h, mi, s = (int(x) for x in m.groups()[:6])
-        datetime(a, mes, d, h, mi, min(s, 59))
-        return s <= 60
+        datetime(a, mes, d, h, mi, s)
+        return True  # segundos 0..59 (o 60 só valeria às 23:59:60; rejeitado sempre, por segurança)
     except ValueError:
         return False
 
-def utf16(t): return len(t.encode("utf-16-le")) // 2
+def utf16(t): return len(t.encode("utf-16-le", "surrogatepass")) // 2
 
 def texto_ok(t, campo, n):
-    t = t.strip() if isinstance(t, str) else ""
+    t = kt_trim(t) if isinstance(t, str) else ""
     if not t or utf16(t) > n:
         return f"{campo} vazio ou maior que {n}"
     for m in RE_VAR.finditer(t):
@@ -77,11 +86,20 @@ def texto_ok(t, campo, n):
 def ausente(o, k): return o.get(k) is None
 
 caminho = sys.argv[1]
-bruto = open(caminho, "rb").read()
+try:
+    bruto = open(caminho, "rb").read()
+except OSError:
+    rejeitar(f"arquivo não encontrado: {caminho}")
 if len(bruto) > TAMANHO_MAX:
     rejeitar(f"arquivo maior que {TAMANHO_MAX} bytes")
+if bruto.startswith(b"\xef\xbb\xbf"):
+    rejeitar("arquivo com BOM UTF-8 (salve sem BOM)")
 try:
-    raiz = json.loads(bruto.decode("utf-8"), parse_constant=rejeitar_constante)
+    texto_bruto = bruto.decode("utf-8")
+except UnicodeDecodeError:
+    rejeitar("arquivo não é UTF-8 válido")
+try:
+    raiz = json.loads(texto_bruto, parse_float=decimal.Decimal, parse_constant=rejeitar_constante)
 except Exception as e:
     rejeitar(f"JSON inválido: {e}")
 if not isinstance(raiz, dict):
@@ -104,12 +122,12 @@ for i, it in enumerate(raiz["items"]):
     if not isinstance(it, dict): erros.append(f"{r}: não é objeto"); continue
     e0 = len(erros)
     def txt(k): return it[k] if isinstance(it.get(k), str) else None   # só string conta
-    id_ = (txt("id") or "").strip()
+    id_ = kt_trim(txt("id") or "")
     if not RE_ID.fullmatch(id_): erros.append(f"{r}: id inválido")
     if txt("tipo") not in TIPOS: erros.append(f"{r}: tipo desconhecido")
-    tom = (txt("tom") or "").strip().upper()
+    tom = kt_trim(txt("tom") or "").upper()
     if tom not in TONS: erros.append(f"{r}: tom desconhecido")
-    sev = (txt("severidade") or "").strip().upper()
+    sev = kt_trim(txt("severidade") or "").upper()
     if sev not in SEVERIDADES: erros.append(f"{r}: severidade desconhecida")
     elif sev in ("ALERTA", "CRITICA") and tom != "SERIO":
         erros.append(f"{r}: aviso (ALERTA/CRITICA) deve ter tom SERIO")
