@@ -3,13 +3,22 @@
 # -------------------------------------------------
 # validar_mensagens.zsh - Valida public/notificacoes/mensagens.json
 # com as MESMAS regras do app (CatalogoMensagensParser). Rode antes do commit.
-# Uso: ./public/scripts/validar_mensagens.zsh [caminho/mensagens.json]
+# Uso: ./public/scripts/validar_mensagens.zsh [--cobertura N] [caminho/mensagens.json]
+#   --cobertura N: exige no mínimo N mensagens ativas para cada par tipo x tom (usado pelo gatilho de novas mensagens).
 # -------------------------------------------------
 set -euo pipefail
 
-ARQUIVO="${1:-$(cd "$(dirname "$0")/.." && pwd)/notificacoes/mensagens.json}"
+COBERTURA=0
+ARQUIVO=""
+while (( $# > 0 )); do
+  case "$1" in
+    --cobertura) COBERTURA="${2:?informe N}"; shift 2 ;;
+    *) ARQUIVO="$1"; shift ;;
+  esac
+done
+ARQUIVO="${ARQUIVO:-$(cd "$(dirname "$0")/.." && pwd)/notificacoes/mensagens.json}"
 
-python3 - "$ARQUIVO" <<'PY'
+python3 - "$ARQUIVO" "$COBERTURA" <<'PY'
 # Regras espelhadas do parser: app/src/main/java/br/com/tlmacedo/meuponto/data/notificacao/CatalogoMensagensParser.kt
 # (repositório do app). O app é a autoridade: se este script divergir do parser, o parser vale.
 # Diferença intencional: o app apenas descarta item inválido; aqui item inválido é ERRO (trava o commit).
@@ -21,7 +30,7 @@ TIPOS = {"ENTRADA_ANTES","ENTRADA_NO_HORARIO","ENTRADA_DEPOIS","SAIDA_INTERVALO_
  "VOLTA_INTERVALO_NO_HORARIO","VOLTA_INTERVALO_DEPOIS","SAIDA_CASA_ANTES","SAIDA_CASA_NO_HORARIO",
  "SAIDA_CASA_DEPOIS","JORNADA_COMPLETA","SALDO_POSITIVO","SALDO_NEGATIVO",
  "TURNO_MAXIMO_SEM_INTERVALO_PROXIMO","JORNADA_MAXIMA_PROXIMA","ENTRE_JORNADAS"}
-TONS = {"SERIO","ENGRACADO"}
+TONS = {"SERIO","ENGRACADO","SARCASTICO"}
 SEVERIDADES = {"INFO","LEMBRETE","ALERTA","CRITICA"}
 ACOES = {"REGISTRAR_ENTRADA","REGISTRAR_SAIDA_INTERVALO","REGISTRAR_VOLTA_INTERVALO","REGISTRAR_SAIDA",
  "VER_RESUMO_DIA","VER_BANCO_HORAS","VER_JORNADA","VER_REGRAS","JUSTIFICAR","ADIAR_LEMBRETE"}
@@ -86,6 +95,7 @@ def texto_ok(t, campo, n):
 def ausente(o, k): return o.get(k) is None
 
 caminho = sys.argv[1]
+cobertura_min = int(sys.argv[2])
 try:
     bruto = open(caminho, "rb").read()
 except OSError:
@@ -129,8 +139,7 @@ for i, it in enumerate(raiz["items"]):
     if tom not in TONS: erros.append(f"{r}: tom desconhecido")
     sev = kt_trim(txt("severidade") or "").upper()
     if sev not in SEVERIDADES: erros.append(f"{r}: severidade desconhecida")
-    elif sev in ("ALERTA", "CRITICA") and tom != "SERIO":
-        erros.append(f"{r}: aviso (ALERTA/CRITICA) deve ter tom SERIO")
+    # Aviso (ALERTA/CRITICA) aceita qualquer tom (como o parser do app desde a versão com SARCASTICO).
     for campo, n in (("titulo", TITULO_MAX), ("corpo", CORPO_MAX)):
         e = texto_ok(txt(campo), campo, n)
         if e: erros.append(f"{r}: {e}")
@@ -173,6 +182,17 @@ for a in avisos: print(a)
 cobertos = {it["tipo"] for it in vencedores if it.get("active") is not False}
 for t in sorted(TIPOS - cobertos):
     print(f"AVISO: nenhum item ativo para {t} (o app usará a reserva embutida)")
+
+if cobertura_min > 0:
+    contagem = {}
+    for it in vencedores:
+        if it.get("active") is not False:
+            k = (it["tipo"], kt_trim(it["tom"]).upper())
+            contagem[k] = contagem.get(k, 0) + 1
+    for t in sorted(TIPOS):
+        for m in sorted(TONS):
+            if contagem.get((t, m), 0) < cobertura_min:
+                erros.append(f"cobertura: {t} x {m} tem {contagem.get((t, m), 0)} (mínimo {cobertura_min})")
 
 if erros:
     print(f"\n{len(erros)} erro(s):")
