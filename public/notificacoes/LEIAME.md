@@ -5,7 +5,7 @@ atualiza as mensagens sem nova build: o app busca o catálogo ao abrir (se o cac
 
 ## Como editar
 1. Altere `mensagens.json` (adicione, edite ou desative itens).
-2. Rode `./public/scripts/validar_mensagens.zsh` — precisa terminar com `OK`.
+2. Rode `./public/scripts/validar_mensagens.zsh` — precisa terminar com `OK` (`--cobertura 8` exige 8 ativas por tipo x tom).
    O validador espelha o parser do app (`CatalogoMensagensParser`); em caso de divergência, **o app é a autoridade**.
 3. Faça commit e publique como a splash.
 
@@ -15,8 +15,8 @@ atualiza as mensagens sem nova build: o app busca o catálogo ao abrir (se o cac
 | `id` | sim | único; letras, números, `_ . -`; até 80 caracteres. Repetir um `id` só vale como versionamento (vence a maior `version`); o validador imprime um AVISO |
 | `version` | não (1) | inteiro ≥ 1; com `id` repetido, vale a maior |
 | `tipo` | sim | um dos 18 tipos (ex.: `ENTRADA_ANTES`, `SAIDA_CASA_DEPOIS`, `SALDO_POSITIVO`) |
-| `tom` | sim | `SERIO` ou `ENGRACADO` |
-| `severidade` | sim | `INFO`, `LEMBRETE`, `ALERTA`, `CRITICA`. **ALERTA/CRITICA só podem ter tom `SERIO`** |
+| `tom` | sim | `SERIO`, `ENGRACADO` ou `SARCASTICO` |
+| `severidade` | sim | `INFO`, `LEMBRETE`, `ALERTA`, `CRITICA`. Qualquer severidade aceita qualquer tom (apps antigos descartam avisos não sérios) |
 | `titulo` | sim | até 80 caracteres (unidades UTF-16 após remover espaços das pontas: um emoji conta como 2) |
 | `corpo` | sim | até 300 caracteres (mesma contagem do título) |
 | `acaoPrincipal` / `acaoSecundaria` | principal sim | `REGISTRAR_ENTRADA`, `REGISTRAR_SAIDA_INTERVALO`, `REGISTRAR_VOLTA_INTERVALO`, `REGISTRAR_SAIDA`, `VER_RESUMO_DIA`, `VER_BANCO_HORAS`, `VER_JORNADA`, `VER_REGRAS`, `JUSTIFICAR`, `ADIAR_LEMBRETE` |
@@ -33,9 +33,16 @@ atualiza as mensagens sem nova build: o app busca o catálogo ao abrir (se o cac
 
 ## Como o app escolhe
 - Filtra por `active`, janela de datas e versão do app. O usuário escolhe o estilo: **Sérias** (só `SERIO`),
-  **Misturar** (todas) ou **Engraçadas** (todas, com as engraçadas valendo 4× no sorteio).
+  **Misturar** (todas), **Engraçadas** (todas, com as engraçadas valendo 4× no sorteio) ou **Sarcásticas**
+  (todas, com as sarcásticas valendo 4×; é o padrão do app).
 - Sem mensagem disponível para um tipo, o app usa o catálogo embutido dele.
 - `schemaVersion` maior que o do app faz o app ignorar o arquivo e manter o último cache.
+
+## Novas mensagens (gatilho)
+Para criar e publicar um lote (mínimo 8 novas por tipo e por tom), use a skill do projeto
+`.claude/skills/novas-mensagens-notificacao` (peça "novas mensagens de notificação"). Ela gera o lote, mescla com
+`public/scripts/mesclar_lote_mensagens.zsh`, valida com `validar_mensagens.zsh --cobertura 8`, espera a aprovação do
+dono, abre o PR, mescla e confere a publicação. O tom `SARCASTICO` usa um prompt próprio, descrito na skill.
 
 ## Regerar o JSON a partir do app
 No repositório do app (a chave de cache do build ignora o ambiente, por isso `--no-build-cache` é obrigatório):
